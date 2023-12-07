@@ -1,0 +1,90 @@
+.mainContainer {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.formContainer {
+    padding: 10px;
+    min-width: 30%;
+}
+
+.password-toggle {
+    position: relative;
+}
+
+.password-toggle input {
+    padding-right: 30px;
+}
+
+.password-toggle .toggle-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+
+.chatContainer {
+    border: 1.5px solid rgb(118, 8, 118);
+    border-radius: 4px;
+    width: 100%;
+    height: 90vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+}
+
+.messageContainer {
+    height: 82%;
+    width: 100%;
+    overflow-y: auto;
+    /* border: 2px solid red; */
+}
+
+.messageInputContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* .messageInputContainer input{
+    width: 90%;
+} */
+.messageInputContainer textarea {
+    width: 90%;
+    border: 1px solid rebeccapurple;
+    border-radius: 2px;
+}
+
+.RecivedMsg {
+    border-radius: 25px 25px 25px 0;
+}
+
+.SendMsg {
+    border-radius: 25px 25px 0 25px;
+}
+
+.allUsersContainer {
+    width: 100%;
+    height: 86vh;
+    overflow-y: auto;
+
+}
+
+
+.allUsersContainer::-webkit-scrollbar {
+    width: 10px;
+}
+
+.allUsersContainer::-webkit-scrollbar-thumb {
+    background-color: #9a9a9a;
+    border-radius: 45px;
+}
+
+.allUsersContainer::-webkit-scrollbar-track {
+    border-radius: 45px;
+    background-color: #f0f0f0;
+}
