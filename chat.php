@@ -17,6 +17,13 @@ $usaerid = $_GET['id'];
 </head>
 
 <body>
+    <script>
+        var userData = localStorage.getItem('loggedInUser');
+        if (userData == null) {
+            window.location.href = './'
+            console.log('Key not found in localStorage');
+        }
+    </script>
 
     <div class="container-fluid">
 
@@ -31,7 +38,7 @@ $usaerid = $_GET['id'];
                     $DATA = $DB->RetriveArray($sql);
                     foreach ($DATA as $key => $item) {
                         echo '
-                        <a href="./chat?id='.$usaerid.'&sendto=' . $item['id'] . '" style="text-decoration: none;">
+                        <a href="./chat?id=' . $usaerid . '&sendto=' . $item['id'] . '" style="text-decoration: none;">
                         <div class="alert ' . ($item['id'] == $_GET['sendto'] ? 'alert-danger' : 'alert-info') . ' mb-1" role="alert">
                             <p class="fw-bold m-0">' . $item['username'] . '</p>
                             Click To Message
@@ -45,19 +52,21 @@ $usaerid = $_GET['id'];
             </div>
             <div class="col-md-9 col-12 mx-auto">
                 <div class="chatContainer p-2">
-                    <h4 class="border-bottom">Chat Box</h4>
-                    <div class="messageContainer p-2" id="messageContainer">
+                    <h4 class="border-bottom">Chat Box of <span id="loggedUserId"></span></h4>
                     <input type="hidden" id="reciverId" name="sendto" value="<?php echo $_GET['sendto']; ?>">
+                    <div class="messageContainer p-2" id="messageContainer">
+
                     </div>
                     <?php
-                    if (isset($_GET['sendto']) ) { 
-                         if ($_GET['sendto'] != 0) {
-                        ?>
-                        <div class="messageInputContainer">
-                            <textarea name="" id="chatMessage" cols="30" rows="1" class="form-control" placeholder="Write Your Message"></textarea>
-                            <button class="btn btn-primary" id="sendBtn">Send <i class="bi bi-send-fill"></i></button>
-                        </div>
-                    <?php } } ?>
+                    if (isset($_GET['sendto'])) {
+                        if ($_GET['sendto'] != 0) {
+                    ?>
+                            <div class="messageInputContainer">
+                                <textarea name="" id="chatMessage" cols="30" rows="1" class="form-control" placeholder="Write Your Message"></textarea>
+                                <button class="btn btn-primary" id="sendBtn">Send <i class="bi bi-send-fill"></i></button>
+                            </div>
+                    <?php }
+                    } ?>
 
                 </div>
             </div>
@@ -76,6 +85,43 @@ $usaerid = $_GET['id'];
     <script>
         $(document).ready(function() {
 
+            var user = localStorage.getItem('loggedInUser');
+            user = JSON.parse(user);
+            let userName = user[0];
+            let userId = user[2];
+            let reciverId = $('#reciverId').val();
+            $('#loggedUserId').text(userName)
+
+            // fetch pre messages 
+            HttpRequest('./api/getPreMessage.php', {
+                    userId,
+                    reciverId,
+                },
+                (data) => {
+                    $.each(data.data, (index, item) => {
+                        console.log(item);
+                        console.log(item.message);
+                        if (item.userid === userId) {
+                            $('#messageContainer').append(`
+                                <div class="alert alert-primary SendMsg" role="alert">
+                                    <p class="fw-bold m-0">${data.reciver}</p>
+                                    ${item.message}
+                                </div>
+                            `)
+                        } else {
+                            $('#messageContainer').append(`
+                                <div class="alert alert-success RecivedMsg" role="alert">
+                                    <p class="fw-bold m-0">${data.sender}</p>
+                                    ${item.message}
+                                </div>
+                            `)
+                        }
+                    })
+                })
+
+
+
+
             var conn = new WebSocket('ws://localhost:8080');
             conn.onopen = function(e) {
                 console.log("Connection established!");
@@ -83,22 +129,19 @@ $usaerid = $_GET['id'];
             };
 
             conn.onmessage = function(e) {
-                console.log('---------');
                 let recivedData = JSON.parse(e.data)
+                console.log('recivedData ==-=-=-=-=-=');
                 console.log(recivedData);
-                $('#messageContainer').append(`
+                if (recivedData.reciverId === userId) {
+                    $('#messageContainer').append(`
                     <div class="alert alert-success RecivedMsg" role="alert">
-                            <p class="fw-bold m-0">${recivedData.userName}</p>
-                            ${recivedData.messgae}
-                        </div>
+                    <p class="fw-bold m-0">${recivedData.userName}</p>
+                    ${recivedData.message}
+                    </div>
                     `)
+                }
             }
 
-            var user = localStorage.getItem('loggedInUser');
-            user = JSON.parse(user);
-            let userName = user[0];
-            let userId = user[2];
-            let reciverId = $('#reciverId').val();
 
             $('#sendBtn').on('click', function() {
                 let message = $('#chatMessage').val()

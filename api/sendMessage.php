@@ -17,7 +17,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Output JSON response
     header('Content-Type: application/json');
     echo json_encode($response);
-    // echo json_encode($_POST['reciverId']);
 } else {
     // Handle other types of requests if needed
     echo "Unsupported request method";

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Login to Chat</title>
     <link href='https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="./asstes/css/style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
@@ -12,12 +12,19 @@
 </head>
 
 <body>
-
+<script>
+      var user = localStorage.getItem('loggedInUser');
+            if (user !== null) {
+                user = JSON.parse(user);
+                let userId = user[2];
+                window.location.href=`chat?id=${userId}&sendto=0`
+            }
+</script>
     <div class="mainContainer">
 
         <div class="formContainer border">
 
-            <form action="" method="post" id="loginForm">
+            <form method="post" id="loginForm">
                 <h4>Login to Your Acoount</h4>
 
                 <div class="mb-3">
@@ -55,7 +62,7 @@
                 e.preventDefault()
                 const email = $('#useremail').val();
                 const password = $('#password').val();
-                
+
                 // Ajax Call 
                 HttpRequest('./api/login.php', {
                         email,
@@ -69,7 +76,7 @@
                             showTost('Success!')
                             setTimeout(function() {
                                 window.location.href = `./chat?id=${data.user[2]}&sendto=0`;
-                            }, 2000);
+                            }, 1500);
 
                         } else {
                             showTost(data.message, false)
